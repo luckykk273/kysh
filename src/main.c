@@ -1,7 +1,7 @@
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 
 #define KYSH_TOK_BUFSIZE (64)
 #define KYSH_TOK_DELIM " \t\r\n\a"
@@ -40,7 +40,7 @@ char **kysh_split_line(char *line) {
 char *kysh_read_line(void) {
 #ifdef KYSH_USE_STD_GETLINE
   char *line = NULL;
-  ssize_t bufsize = 0;
+  size_t bufsize = 0;
   if (getline(&line, &bufsize, stdin) == -1) {
     if (feof(stdin)) {
       exit(EXIT_SUCCESS);
