@@ -6,6 +6,8 @@
 #define KYSH_TOK_BUFSIZE (64)
 #define KYSH_TOK_DELIM " \t\r\n\a"
 char **kysh_split_line(char *line) {
+  // TODO: Handle quoting, backslash escaping and pipeline in the command line
+  // arguments
   int bufsize = KYSH_TOK_BUFSIZE, position = 0;
   char **tokens = malloc(sizeof(char *) * bufsize);
   char *token;
