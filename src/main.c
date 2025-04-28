@@ -1,8 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 
-#define KYSH_RL_BUFSIZE (1024)
+#define KYSH_TOK_BUFSIZE (64)
+#define KYSH_TOK_DELIM " \t\r\n\a"
+char **kysh_split_line(char *line) {
+  int bufsize = KYSH_TOK_BUFSIZE, position = 0;
+  char **tokens = malloc(sizeof(char *) * bufsize);
+  char *token;
+
+  if (tokens == NULL) {
+    fprintf(stderr, "[ERROR] kysh: memory allocation error\n");
+    exit(EXIT_FAILURE);
+  }
+
+  token = strtok(line, KYSH_TOK_DELIM);
+  while (token != NULL) {
+    tokens[position] = token;
+    position++;
+
+    if (position >= bufsize) {
+      bufsize += KYSH_TOK_BUFSIZE;
+      tokens = realloc(tokens, sizeof(char *) * bufsize);
+      if (tokens == NULL) {
+        fprintf(stderr, "[ERROR] kysh: memory allocation error\n");
+        exit(EXIT_FAILURE);
+      }
+    }
+
+    token = strtok(NULL, KYSH_TOK_DELIM);
+  }
+
+  tokens[position] = NULL;
+  return tokens;
+}
+
 #define KYSH_USE_STD_GETLINE
 char *kysh_read_line(void) {
 #ifdef KYSH_USE_STD_GETLINE
@@ -63,7 +96,7 @@ void kysh_loop(void) {
   do {
     printf("> ");
     line = kysh_read_line();
-    // args = kysh_split_line(line);
+    args = kysh_split_line(line);
     // status = kysh_execute(args);
 
     free(line);
