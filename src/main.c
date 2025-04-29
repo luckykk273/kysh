@@ -1,7 +1,9 @@
-#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
 #define KYSH_TOK_BUFSIZE (64)
 #define KYSH_TOK_DELIM " \t\r\n\a"
@@ -47,7 +49,7 @@ char *kysh_read_line(void) {
     if (feof(stdin)) {
       exit(EXIT_SUCCESS);
     } else {
-      perror("[ERROR] readline error");
+      perror("[ERROR] readline error\n");
       exit(EXIT_FAILURE);
     }
   }
@@ -88,6 +90,30 @@ char *kysh_read_line(void) {
     }
   }
 #endif
+}
+
+int kysh_launch(char **args) {
+  pid_t pid, wpid;
+  int status;
+
+  pid = fork();
+  if (pid == 0) {
+    // Child process
+    if (execvp(args[0], args) == -1) {
+      perror("[ERROR] kysh\n");
+    }
+    exit(EXIT_FAILURE);
+  } else if (pid < 0) {
+    // Error forking
+    perror("[ERROR] kysh\n");
+  } else {
+    // Parent process
+    do {
+      wpid = waitpid(pid, &status, WUNTRACED);
+    } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+  }
+
+  return 1;
 }
 
 void kysh_loop(void) {
