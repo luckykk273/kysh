@@ -21,10 +21,10 @@ int kysh_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
 int kysh_cd(char **args) {
   // TODO: Add number of args check
   if (args[1] == NULL) {
-    fprintf(stderr, "[ERROR] kysh: cd: expected argument\n");
+    fprintf(stderr, "kysh: cd: expected argument\n");
   } else {
     if (chdir(args[1]) != 0) {
-      perror("[ERROR] kysh\n");
+      perror("kysh\n");
     }
   }
   return 1;
@@ -56,7 +56,7 @@ char **kysh_split_line(char *line) {
   char *token;
 
   if (tokens == NULL) {
-    fprintf(stderr, "[ERROR] kysh: memory allocation error\n");
+    fprintf(stderr, "kysh: memory allocation error\n");
     exit(EXIT_FAILURE);
   }
 
@@ -69,7 +69,7 @@ char **kysh_split_line(char *line) {
       bufsize += KYSH_TOK_BUFSIZE;
       tokens = realloc(tokens, sizeof(char *) * bufsize);
       if (tokens == NULL) {
-        fprintf(stderr, "[ERROR] kysh: memory allocation error\n");
+        fprintf(stderr, "kysh: memory allocation error\n");
         exit(EXIT_FAILURE);
       }
     }
@@ -90,7 +90,7 @@ char *kysh_read_line(void) {
     if (feof(stdin)) {
       exit(EXIT_SUCCESS);
     } else {
-      perror("[ERROR] readline error\n");
+      perror("readline error\n");
       exit(EXIT_FAILURE);
     }
   }
@@ -103,7 +103,7 @@ char *kysh_read_line(void) {
   int c;
 
   if (buffer == NULL) {
-    fprintf(stderr, "[ERROR] kysh: memory allocation error\n");
+    fprintf(stderr, "kysh: memory allocation error\n");
     exit(EXIT_FAILURE);
   }
 
@@ -125,7 +125,7 @@ char *kysh_read_line(void) {
       bufsize += KYSH_RL_BUFSIZE;
       buffer = realloc(buffer, bufsize);
       if (buffer == NULL) {
-        fprintf(stderr, "[ERROR] kysh: memory allocation error\n");
+        fprintf(stderr, "kysh: memory allocation error\n");
         exit(EXIT_FAILURE);
       }
     }
@@ -141,12 +141,12 @@ int kysh_launch(char **args) {
   if (pid == 0) {
     // Child process
     if (execvp(args[0], args) == -1) {
-      perror("[ERROR] kysh\n");
+      perror("kysh\n");
     }
     exit(EXIT_FAILURE);
   } else if (pid < 0) {
     // Error forking
-    perror("[ERROR] kysh\n");
+    perror("kysh\n");
   } else {
     // Parent process
     do {
