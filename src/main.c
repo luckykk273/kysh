@@ -5,6 +5,47 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
+/* Functions declarations for builtin shell commands */
+// TODO: Move builtin functions to a separate file
+int kysh_cd(char **args);
+int kysh_help(char **args);
+int kysh_exit(char **args);
+
+/* List of builtin shell commands; followed by their corresponding functions */
+char *builtin_str[] = {"cd", "help", "exit"};
+int (*builtin_func[])(char **) = {&kysh_cd, &kysh_help, &kysh_exit};
+
+int kysh_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
+
+/* Builtin functions implementations */
+int kysh_cd(char **args) {
+  // TODO: Add number of args check
+  if (args[1] == NULL) {
+    fprintf(stderr, "[ERROR] kysh: cd: expected argument\n");
+  } else {
+    if (chdir(args[1]) != 0) {
+      perror("[ERROR] kysh\n");
+    }
+  }
+  return 1;
+}
+
+int kysh_help(char **args) {
+  int i;
+  printf("kysh\n");
+  printf("Type program names and arguments, and hit enter.\n");
+  printf("The following are built in:\n");
+
+  for (i = 0; i < kysh_num_builtins(); i++) {
+    printf("  %s\n", builtin_str[i]);
+  }
+
+  printf("Use the man command for information on other programs.\n");
+  return 1;
+}
+
+int kysh_exit(char **args) { return EXIT_SUCCESS; }
+
 #define KYSH_TOK_BUFSIZE (64)
 #define KYSH_TOK_DELIM " \t\r\n\a"
 char **kysh_split_line(char *line) {
