@@ -6,7 +6,6 @@
 #include <unistd.h>
 
 /* Functions declarations for builtin shell commands */
-// TODO: Move builtin functions to a separate file
 int kysh_cd(char **args);
 int kysh_help(char **args);
 int kysh_exit(char **args);
@@ -19,7 +18,6 @@ int kysh_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
 
 /* Builtin functions implementations */
 int kysh_cd(char **args) {
-  // TODO: Add number of args check
   if (args[1] == NULL) {
     fprintf(stderr, "kysh: cd: expected argument\n");
   } else {
@@ -49,7 +47,6 @@ int kysh_exit(char **args) { return EXIT_SUCCESS; }
 #define KYSH_TOK_BUFSIZE (64)
 #define KYSH_TOK_DELIM " \t\r\n\a"
 char **kysh_split_line(char *line) {
-  // TODO: Handle quoting, backslash escaping and pipeline in the command line
   // arguments
   int bufsize = KYSH_TOK_BUFSIZE, position = 0;
   char **tokens = malloc(sizeof(char *) * bufsize);
