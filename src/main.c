@@ -57,6 +57,7 @@ char *kysh_read_line(void) {
 
   return line;
 #else
+#define KYSH_RL_BUFSIZE (1024)
   int bufsize = KYSH_RL_BUFSIZE;
   int position = 0;
   char *buffer = malloc(sizeof(char) * bufsize);
