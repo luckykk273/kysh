@@ -31,9 +31,9 @@ int kysh_launch(char **args) {
   return 1;
 }
 
-int kysh_execute(char **args) {
+int kysh_execute(int argc, char **args) {
   int i;
-  if (args[0] == NULL) {
+  if (argc == 0) {
     // An empty command entered
     return 1;
   }
@@ -50,13 +50,13 @@ int kysh_execute(char **args) {
 void kysh_loop(void) {
   char *line;
   char **args;
-  int status;
+  int argc, status;
 
   do {
     kysh_display_cwd();
     line = kysh_read_line();
-    args = kysh_split_line(line);
-    status = kysh_execute(args);
+    args = kysh_split_line(line, &argc);
+    status = kysh_execute(argc, args);
 
     free(line);
     free(args);

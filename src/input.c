@@ -6,7 +6,7 @@
 
 #include "builtins.h"
 
-char **kysh_split_line(char *line) {
+char **kysh_split_line(char *line, int *argc) {
   // arguments
   int bufsize = KYSH_TOK_BUFSIZE, position = 0;
   char **tokens = malloc(sizeof(char *) * bufsize);
@@ -34,7 +34,10 @@ char **kysh_split_line(char *line) {
     token = strtok(NULL, KYSH_TOK_DELIM);
   }
 
-  tokens[position] = NULL;
+  if (argc) {
+    *argc = position;
+  }
+
   return tokens;
 }
 

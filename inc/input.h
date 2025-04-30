@@ -10,9 +10,9 @@ extern "C" {
 
 #define KYSH_TOK_BUFSIZE (64)
 #define KYSH_TOK_DELIM " \t\r\n\a"
-#define KYSH_USE_STD_GETLINE
+// #define KYSH_USE_STD_GETLINE
 
-char **kysh_split_line(char *line);
+char **kysh_split_line(char *line, int *argc);
 char *kysh_read_line(void);
 
 #ifdef __cplusplus
