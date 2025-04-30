@@ -12,7 +12,7 @@ int kysh_exit(char **args);
 
 /* List of builtin shell commands; followed by their corresponding functions */
 char *builtin_str[] = {"cd", "help", "exit"};
-int (*builtin_func[])(char **) = {&kysh_cd, &kysh_help, &kysh_exit};
+int (*builtin_func[])(char **) = {kysh_cd, kysh_help, kysh_exit};
 
 int kysh_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
 
@@ -154,6 +154,22 @@ int kysh_launch(char **args) {
   return 1;
 }
 
+int kysh_execute(char **args) {
+  int i;
+  if (args[0] == NULL) {
+    // An empty command entered
+    return 1;
+  }
+
+  for (i = 0; i < kysh_num_builtins(); i++) {
+    if (strcmp(args[0], builtin_str[i]) == 0) {
+      return builtin_func[i](args);
+    }
+  }
+
+  return kysh_launch(args);
+}
+
 void kysh_loop(void) {
   char *line;
   char **args;
@@ -163,7 +179,7 @@ void kysh_loop(void) {
     printf("> ");
     line = kysh_read_line();
     args = kysh_split_line(line);
-    // status = kysh_execute(args);
+    status = kysh_execute(args);
 
     free(line);
     free(args);
