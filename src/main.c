@@ -5,44 +5,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-/* Functions declarations for builtin shell commands */
-int kysh_cd(char **args);
-int kysh_help(char **args);
-int kysh_exit(char **args);
-
-/* List of builtin shell commands; followed by their corresponding functions */
-char *builtin_str[] = {"cd", "help", "exit"};
-int (*builtin_func[])(char **) = {kysh_cd, kysh_help, kysh_exit};
-
-int kysh_num_builtins() { return sizeof(builtin_str) / sizeof(char *); }
-
-/* Builtin functions implementations */
-int kysh_cd(char **args) {
-  if (args[1] == NULL) {
-    fprintf(stderr, "kysh: cd: expected argument\n");
-  } else {
-    if (chdir(args[1]) != 0) {
-      perror("kysh\n");
-    }
-  }
-  return 1;
-}
-
-int kysh_help(char **args) {
-  int i;
-  printf("kysh\n");
-  printf("Type program names and arguments, and hit enter.\n");
-  printf("The following are built in:\n");
-
-  for (i = 0; i < kysh_num_builtins(); i++) {
-    printf("  %s\n", builtin_str[i]);
-  }
-
-  printf("Use the man command for information on other programs.\n");
-  return 1;
-}
-
-int kysh_exit(char **args) { return EXIT_SUCCESS; }
+#include "builtins.h"
 
 #define KYSH_TOK_BUFSIZE (64)
 #define KYSH_TOK_DELIM " \t\r\n\a"
@@ -162,8 +125,8 @@ int kysh_execute(char **args) {
   }
 
   for (i = 0; i < kysh_num_builtins(); i++) {
-    if (strcmp(args[0], builtin_str[i]) == 0) {
-      return builtin_func[i](args);
+    if (strcmp(args[0], kysh_builtins[i].name) == 0) {
+      return kysh_builtins[i].func(args);
     }
   }
 
