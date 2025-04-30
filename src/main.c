@@ -53,7 +53,7 @@ void kysh_loop(void) {
   int status;
 
   do {
-    printf("> ");
+    kysh_display_cwd();
     line = kysh_read_line();
     args = kysh_split_line(line);
     status = kysh_execute(args);

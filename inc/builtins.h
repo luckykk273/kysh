@@ -20,6 +20,7 @@ int kysh_cd(char **args);
 int kysh_help(char **args);
 int kysh_exit(char **args);
 int kysh_num_builtins(void);
+void kysh_display_cwd(void);
 
 #ifdef __cplusplus
 }

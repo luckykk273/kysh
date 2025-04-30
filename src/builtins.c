@@ -4,8 +4,13 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#define KYSH_DISPLAY_PATH_BUFSIZE (1024)
+
 const builtins kysh_builtins[] = {
-    {"cd", kysh_cd}, {"help", kysh_help}, {"exit", kysh_exit}};
+    {"cd", kysh_cd},
+    {"help", kysh_help},
+    {"exit", kysh_exit},
+};
 
 int kysh_num_builtins() {
   return sizeof(kysh_builtins) / sizeof(kysh_builtins[0]);
@@ -37,3 +42,15 @@ int kysh_help(char **args) {
 }
 
 int kysh_exit(char **args) { return EXIT_SUCCESS; }
+
+void kysh_display_cwd(void) {
+  char cwd[KYSH_DISPLAY_PATH_BUFSIZE];
+  cwd[KYSH_DISPLAY_PATH_BUFSIZE - 1] = '\0';
+  if (getcwd(cwd, KYSH_DISPLAY_PATH_BUFSIZE - 1) == NULL) {
+    perror("getcwd error\n");
+  } else {
+    printf("%s", cwd);
+  }
+
+  printf("> ");
+}
