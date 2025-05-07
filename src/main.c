@@ -24,11 +24,11 @@ int kysh_launch(command_t *commands) {
       }
       close(fd[0]);
       if (execvp(commands->argv[0], commands->argv) == -1) {
-        perror("kysh: execvp\n");
+        perror("kysh: execvp");
       }
       exit(EXIT_FAILURE);
     } else if (pid < 0) {
-      perror("kysh: fork\n");
+      perror("kysh: fork");
     } else {
       // Parent process
       // wait(NULL);

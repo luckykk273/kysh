@@ -21,7 +21,7 @@ int kysh_cd(char **argv) {
     fprintf(stderr, "kysh: cd: expected argument\n");
   } else {
     if (chdir(argv[1]) != 0) {
-      perror("kysh: chdir\n");
+      perror("kysh: chdir");
     }
   }
   return 1;
@@ -47,7 +47,7 @@ void kysh_display_cwd(void) {
   char cwd[KYSH_DISPLAY_PATH_BUFSIZE];
   cwd[KYSH_DISPLAY_PATH_BUFSIZE - 1] = '\0';
   if (getcwd(cwd, KYSH_DISPLAY_PATH_BUFSIZE - 1) == NULL) {
-    perror("kysh: getcwd\n");
+    perror("kysh: getcwd");
   } else {
     printf("%s", cwd);
   }

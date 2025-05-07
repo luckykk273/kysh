@@ -169,7 +169,7 @@ char *kysh_read_line(void) {
     if (feof(stdin)) {
       exit(EXIT_SUCCESS);
     } else {
-      perror("kysh: feof\n");
+      perror("kysh: feof");
       exit(EXIT_FAILURE);
     }
   }
