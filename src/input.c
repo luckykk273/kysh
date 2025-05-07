@@ -19,6 +19,15 @@ void kysh_free_tokens(char **tokens) {
   free(tokens);
 }
 
+int kysh_commands_num(command_t *commands) {
+  int num = 0;
+  while (commands != NULL) {
+    num++;
+    commands = commands->next;
+  }
+  return num;
+}
+
 void kysh_print_commands(command_t *commands) {
   int i, cmd_num = 0;
   while (commands != NULL) {
@@ -96,8 +105,7 @@ char **kysh_tokenize(char *line) {
 
 /*
   1. Handle '|', '<', '>' only;
-  2. whitespace to split;
-  3. '>' and '>' can only be placed to the left/right most;
+  2. '>' and '>' can only be placed to the left/right most;
   */
 command_t *kysh_parse_tokens(char **tokens) {
   command_t *head = NULL, *current = NULL, *node;
@@ -153,39 +161,6 @@ command_t *kysh_parse_tokens(char **tokens) {
   return head;
 }
 
-#if 0
-char **kysh_tokenize(char *line) {
-  // arguments
-  int bufsize = KYSH_TOK_BUFSIZE, position = 0;
-  char **tokens = malloc(sizeof(char *) * bufsize);
-  char *token;
-
-  if (tokens == NULL) {
-    fprintf(stderr, "kysh: memory allocation error\n");
-    exit(EXIT_FAILURE);
-  }
-
-  token = strtok(line, KYSH_TOK_DELIM);
-  while (token != NULL) {
-    tokens[position] = token;
-    position++;
-
-    if (position >= bufsize) {
-      bufsize += KYSH_TOK_BUFSIZE;
-      tokens = realloc(tokens, sizeof(char *) * bufsize);
-      if (tokens == NULL) {
-        fprintf(stderr, "kysh: memory allocation error\n");
-        exit(EXIT_FAILURE);
-      }
-    }
-
-    token = strtok(NULL, KYSH_TOK_DELIM);
-  }
-
-  return tokens;
-}
-#endif
-
 char *kysh_read_line(void) {
 #ifdef KYSH_USE_STD_GETLINE
   char *line = NULL;
@@ -217,7 +192,9 @@ char *kysh_read_line(void) {
     c = getchar();
 
     // If we hit the EOF, replace it with a hull character and return
-    if (c == EOF || c == '\n') {
+    if (c == EOF) {
+      exit(EXIT_SUCCESS);
+    } else if (c == '\n') {
       buffer[position] = '\0';
       return buffer;
     } else {
