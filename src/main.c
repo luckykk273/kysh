@@ -44,22 +44,22 @@ int kysh_launch(command_t *commands) {
 
 int kysh_execute(command_t *commands) {
   int i;
-  while (commands != NULL) {
-    if (commands->argv[0] == NULL) {
-      // An empty command entered
-      return 1;
-    }
-
+  int cmd_num = kysh_commands_num(commands);
+  if (cmd_num == 1) {
+    // Builtin function is valid only if there is no pipe
     for (i = 0; i < kysh_num_builtins(); i++) {
       if (strcmp(commands->argv[0], kysh_builtins[i].name) == 0) {
         return kysh_builtins[i].func(commands->argv);
       }
     }
-
-    return kysh_launch(commands);
   }
 
-  return 1;
+  if (commands == NULL || commands->argv[0] == NULL) {
+    // An empty command entered
+    return 1;
+  }
+
+  return kysh_launch(commands);
 }
 
 void kysh_loop(void) {
