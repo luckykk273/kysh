@@ -17,11 +17,7 @@ kysh> ls -al | rev | nl | cat -e
 ```
 
 ## TODO
-1. Handle quoting, backslash escaping
-2. Pipes and I/O redirection
-    - Handle pipe with builtins
-    - Add basic I/O redirection
-3. Globbing
+1. I/O redirection
 
 ## Reference
 1. [Tutorial - Write a Shell in C](https://brennan.io/2015/01/16/write-a-shell-in-c/)
