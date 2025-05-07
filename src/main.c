@@ -23,7 +23,9 @@ int kysh_launch(command_t *commands) {
         dup2(fd[1], STDOUT_FILENO);
       }
       close(fd[0]);
-      execvp(commands->argv[0], commands->argv);
+      if (execvp(commands->argv[0], commands->argv) == -1) {
+        perror("kysh: execvp\n");
+      }
       exit(EXIT_FAILURE);
     } else if (pid < 0) {
       perror("kysh: fork\n");
