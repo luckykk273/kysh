@@ -11,22 +11,24 @@
 int kysh_launch(command_t *commands) {
   int fd[2];
   pid_t pid, wpid;
-  int status, fdd = 0; /* Backup */
+  int status, fdd = 0;  // Backup
 
   while (commands != NULL) {
     pipe(fd);
     pid = fork();
     if (pid == 0) {
-      dup2(fdd, 0);
+      // Child process
+      dup2(fdd, STDIN_FILENO);
       if (commands->next != NULL && commands->next->argv != NULL) {
-        dup2(fd[1], 1);
+        dup2(fd[1], STDOUT_FILENO);
       }
       close(fd[0]);
       execvp(commands->argv[0], commands->argv);
-      exit(1);
+      exit(EXIT_FAILURE);
     } else if (pid < 0) {
       perror("kysh: fork\n");
     } else {
+      // Parent process
       // wait(NULL);
       do {
         wpid = waitpid(pid, &status, WUNTRACED);
