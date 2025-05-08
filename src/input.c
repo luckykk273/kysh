@@ -20,36 +20,108 @@ void kysh_free_tokens(char **tokens) {
 }
 
 int kysh_commands_num(command_t *commands) {
+  command_t *cur = commands;
   int num = 0;
-  while (commands != NULL) {
+  while (cur != NULL) {
     num++;
-    commands = commands->next;
+    cur = cur->next;
   }
   return num;
 }
 
+void kysh_print_redirections(redirection_t *redirections) {
+  redirection_t *cur = redirections;
+  int redir_num = 0;
+  char *dir[2] = {"<", ">"};
+  printf("Redirection:\n");
+  while (cur != NULL) {
+    printf("  dir[%d]: \"%s %s\"\n", redir_num++, dir[cur->dir], cur->file);
+    cur = cur->next;
+  }
+}
+
+void kysh_free_redirections(redirection_t *redirections) {
+  redirection_t *next, *cur = redirections;
+  while (cur != NULL) {
+    next = cur->next;
+    free(cur->file);
+    free(cur);
+    cur = next;
+  }
+}
+
 void kysh_print_commands(command_t *commands) {
+  command_t *cur = commands;
   int i, cmd_num = 0;
-  while (commands != NULL) {
-    printf("Command %d: argc = %d\n", cmd_num++, commands->argc);
-    for (i = 0; i < commands->argc; i++) {
-      printf("  argv[%d]: %s\n", i, commands->argv[i]);
+  while (cur != NULL) {
+    printf("Command %d: argc = %d\n", cmd_num++, cur->argc);
+    for (i = 0; i < cur->argc; i++) {
+      printf("  argv[%d]: \"%s\"\n", i, cur->argv[i]);
     }
-    commands = commands->next;
+
+    kysh_print_redirections(cur->redir);
+    cur = cur->next;
   }
 }
 
 void kysh_free_commands(command_t *commands) {
-  command_t *next;
+  command_t *next, *cur = commands;
   int i;
-  while (commands != NULL) {
-    next = commands->next;
-    for (i = 0; i < commands->argc; i++) {
-      free(commands->argv[i]);
+  while (cur != NULL) {
+    next = cur->next;
+    for (i = 0; i < cur->argc; i++) {
+      free(cur->argv[i]);
     }
-    free(commands->argv);
-    free(commands);
-    commands = next;
+    free(cur->argv);
+    kysh_free_redirections(cur->redir);
+    free(cur);
+    cur = next;
+  }
+}
+
+void kysh_parse_commands(command_t *commands) {
+  command_t *cmd_cur = commands;
+  redirection_t *redir_head, *redir_tail, *redir_cur;
+  char **argv_new;
+  int i, argc_new;
+  while (cmd_cur != NULL) {
+    // TODO: optimize memory size allocation
+    argv_new = malloc(sizeof(char *) * (cmd_cur->argc + 1));
+    argc_new = 0;
+    redir_head = redir_tail = NULL;
+
+    for (i = 0; i < cmd_cur->argc; i++) {
+      if (strcmp(cmd_cur->argv[i], "<") == 0 ||
+          strcmp(cmd_cur->argv[i], ">") == 0) {
+        if (i + 1 >= cmd_cur->argc) {
+          // TODO: handle syntax error near unexpected token
+        }
+
+        redir_cur = malloc(sizeof(redirection_t));
+        redir_cur->file = strdup(cmd_cur->argv[i + 1]);
+        redir_cur->dir = (strcmp(cmd_cur->argv[i], "<") == 0) ? 0 : 1;
+        redir_cur->next = NULL;
+
+        if (redir_head == NULL) {
+          redir_head = redir_tail = redir_cur;
+        } else {
+          redir_tail->next = redir_cur;
+          redir_tail = redir_cur;
+        }
+
+        i++;  // Skip the word
+      } else {
+        argv_new[argc_new] = strdup(cmd_cur->argv[i]);
+        argc_new++;
+      }
+    }
+
+    argv_new[argc_new] = NULL;
+    cmd_cur->argc = argc_new;
+    kysh_free_tokens(cmd_cur->argv);
+    cmd_cur->argv = argv_new;
+    cmd_cur->redir = redir_head;
+    cmd_cur = cmd_cur->next;
   }
 }
 
