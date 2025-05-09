@@ -33,11 +33,12 @@ void kysh_print_redirections(redirection_t *redirections) {
   redirection_t *cur = redirections;
   int redir_num = 0;
   char *dir[2] = {"<", ">"};
-  printf("Redirection:\n");
+  printf("redirections: [ ");
   while (cur != NULL) {
-    printf("  dir[%d]: \"%s %s\"\n", redir_num++, dir[cur->dir], cur->file);
+    printf("\"%s %s\" ", dir[cur->dir], cur->file);
     cur = cur->next;
   }
+  printf("]\n");
 }
 
 void kysh_free_redirections(redirection_t *redirections) {
@@ -50,18 +51,60 @@ void kysh_free_redirections(redirection_t *redirections) {
   }
 }
 
+void kysh_print_reformat_command(command_t *command) {
+  redirection_t *redir_cur;
+  int i;
+  char *dir[2] = {"<", ">"};
+  printf("reformat command: [ ");
+  for (i = 0; i < command->argc; i++) {
+    printf("\"%s\" ", command->argv[i]);
+  }
+  redir_cur = command->redir;
+  while (redir_cur != NULL) {
+    printf("\"%s %s\" ", dir[redir_cur->dir], redir_cur->file);
+    redir_cur = redir_cur->next;
+  }
+  printf("]\n");
+}
+
 void kysh_print_commands(command_t *commands) {
   command_t *cur = commands;
   int i, cmd_num = 0;
+  printf("command:\n");
   while (cur != NULL) {
-    printf("Command %d: argc = %d\n", cmd_num++, cur->argc);
+    printf("  cmd [%d]:  argc = %d, argv = [ ", cmd_num++, cur->argc);
     for (i = 0; i < cur->argc; i++) {
-      printf("  argv[%d]: \"%s\"\n", i, cur->argv[i]);
+      printf("\"%s\" ", cur->argv[i]);
     }
-
+    printf("]\n");
+    printf("    ");
     kysh_print_redirections(cur->redir);
+    printf("  ");
+    kysh_print_reformat_command(cur);
+    printf("\n");
     cur = cur->next;
   }
+}
+
+void kysh_print_tokens(char **tokens) {
+  int i;
+  printf("tokens: [ ");
+  if (tokens != NULL) {
+    for (i = 0; tokens[i] != NULL; i++) {
+      printf("\"%s\" ", tokens[i]);
+    }
+  }
+  printf("]\n");
+}
+
+void kysh_print_line(char *line) {
+  printf("line: \"");
+  if (line != NULL) {
+    printf("%s", line);
+  } else {
+    printf("NULL");
+  }
+  printf("\"\n");
 }
 
 void kysh_free_commands(command_t *commands) {

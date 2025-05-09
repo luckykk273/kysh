@@ -40,7 +40,7 @@ kysh> echo hello | echo world | cd ..
 
 **Multiple redirections only**
 ```bash
-kysh> echo > out1 > out2
+kysh> echo hello > out1 > out2
 kysh> ls -l > file1 -a > file2
 kysh> grep main < ./src/main.c > out
 ```
