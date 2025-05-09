@@ -2,7 +2,7 @@
 A simple shell in C.
 
 ## Preface
-This repository was originally created by following the [website tutorial](https://brennan.io/2015/01/16/write-a-shell-in-c/), and later had some additional features added (e.g. tokenizer, multiple pipes and I/O redirection). There are some known errors, but in most cases, it runs well enough. Since this repo is just intended to help with understanding some important [concepts](#key-concepts), these errors **WON'T** be fixed for now.
+This repository was originally created by following the [website tutorial](https://brennan.io/2015/01/16/write-a-shell-in-c/), and later had some additional features added (e.g. tokenizer, multiple pipes and I/O redirections). There are some known errors, but in most cases, it runs well enough. Since this repo is just intended to help with understanding some important [concepts](#key-concepts), these errors **WON'T** be fixed for now.
 
 ## Usage
 ### Build and run
@@ -24,8 +24,19 @@ kysh>
 4. Linked list (`command_t`, `redirection_t`)
 
 ## Tests
-Some cases are tested as below:  
+If someone wants to see the results only, run `kysh` and enter the commands manually.  
 NOTE: The behaviors in `kysh` should be the **SAME** as in `Bash`  
+
+If someone wants to see the details of how `kysh` works, run the test functions in `tests/test.c`.
+
+### Run the test functions
+```bash
+$ cd tests
+$ make
+$ ./build/test
+```
+
+### Run the commands manually
 **Multiple pipes only**
 ```bash
 kysh> ls -al | rev | nl | cat -e
