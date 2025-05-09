@@ -8,6 +8,32 @@
 #include "builtins.h"
 #include "input.h"
 
+void kysh_redirect(redirection_t *redirections) {
+  redirection_t *cur = redirections;
+  while (cur) {
+    if (cur->dir == 0) {
+      // Input redirection
+      int fd = open(cur->file, O_RDONLY);
+      if (fd < 0) {
+        perror(cur->file);
+        exit(EXIT_FAILURE);
+      }
+      dup2(fd, STDIN_FILENO);
+      close(fd);
+    } else if (cur->dir == 1) {
+      // Output redirection
+      int fd = open(cur->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+      if (fd < 0) {
+        perror(cur->file);
+        exit(EXIT_FAILURE);
+      }
+      dup2(fd, STDOUT_FILENO);
+      close(fd);
+    }
+    cur = cur->next;
+  }
+}
+
 int kysh_launch(command_t *commands) {
   int fd[2];
   pid_t pid, wpid;
@@ -23,6 +49,7 @@ int kysh_launch(command_t *commands) {
         dup2(fd[1], STDOUT_FILENO);
       }
       close(fd[0]);
+      kysh_redirect(commands->redir);
       if (execvp(commands->argv[0], commands->argv) == -1) {
         perror("kysh: execvp");
       }
@@ -74,8 +101,8 @@ void kysh_loop(void) {
     kysh_display_cwd();
     line = kysh_read_line();
     tokens = kysh_tokenize(line);
-    // TODO: how to parse tokens for pipes and I/O redirection
     commands = kysh_parse_tokens(tokens);
+    kysh_parse_commands(commands);
     status = kysh_execute(commands);
 
     free(line);
