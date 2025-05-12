@@ -37,15 +37,17 @@ void kysh_redirect(redirection_t *redirections) {
 int kysh_launch(command_t *commands) {
   int fd[2];
   pid_t pid, wpid;
-  int status, fdd = 0;  // Backup
+  int status, fdd = 0;
 
   while (commands != NULL) {
     pipe(fd);
     pid = fork();
     if (pid == 0) {
       // Child process
+      // Set the current input as the reading from the PREVIOUS pipe
       dup2(fdd, STDIN_FILENO);
       if (commands->next != NULL && commands->next->argv != NULL) {
+        // Set the current output as the writing to the NEXT pipe
         dup2(fd[1], STDOUT_FILENO);
       }
       close(fd[0]);
@@ -63,6 +65,8 @@ int kysh_launch(command_t *commands) {
         wpid = waitpid(pid, &status, WUNTRACED);
       } while (!WIFEXITED(status) && !WIFSIGNALED(status));
       close(fd[1]);
+      // Backup the reading from the current pipe as the input for the NEXT
+      // pipe
       fdd = fd[0];
       commands = commands->next;
     }
